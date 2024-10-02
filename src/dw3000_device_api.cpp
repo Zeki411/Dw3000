@@ -795,7 +795,7 @@ int dwt_initialise(uint8_t mode)
     if(pdw3000local->init_xtrim == 0)
     {
         pdw3000local->init_xtrim = 0x2E ; //set default value
-    printf("XTRIM OTP READ FAIL\r\n");
+        // printf("XTRIM OTP READ FAIL\r\n");
     }
     dwt_write8bitoffsetreg(XTAL_ID, 0, pdw3000local->init_xtrim);
 
