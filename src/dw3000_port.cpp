@@ -76,31 +76,23 @@ void deca_usleep(uint8_t time_us) // wrapper for decawave sleep function
   sleepus(time_us);
 }
 
+/* DW IC IRQ handler definition. */
+static port_dwic_isr_t port_dwic_isr = NULL;
 
 void spiBegin(uint8_t irq, uint8_t rst)
 {
-  /*DDR_SPI = _BV(DD_MOSI)|_BV(DD_SCK)|_BV(DD_SS); // Set MOSI, SCK and CS output
-  DDR_SPI &= ~_BV(DD_MISO); // make sure MISO is an input
-  SPCR0 = _BV(SPE)|_BV(MSTR); // Enable SPI functionality and Master SPI mode
-  SPCR0 &= ~_BV(DORD); // set SPI most significant bit first (this is default on ATMEGA328pb)
-  */
   // generous initial init/wake-up-idle delay
   delay(5);
-  // Configure the IRQ pin as INPUT. Required for correct interrupt setting for ESP8266
-  pinMode(irq, INPUT);
+  // pinMode(irq, INPUT);
+  pinMode(irq, INPUT_PULLDOWN);
   // start SPI
   SPI.begin();
-#ifndef ESP8266
-//  SPI.usingInterrupt(digitalPinToInterrupt(irq)); // not every board support this, e.g. ESP8266
-#endif
+
   // pin and basic member setup
   _rst        = rst;
   _irq        = irq;
-  //_deviceMode = IDLE_MODE;
-  // attach interrupt
-  //attachInterrupt(_irq, DW1000Class::handleInterrupt, CHANGE); // todo interrupt for ESP8266
-  // TODO throw error if pin is not a interrupt pin
-  //attachInterrupt(digitalPinToInterrupt(_irq), DW1000Class::handleInterrupt, RISING); // todo interrupt for ESP8266
+
+  attachInterrupt(digitalPinToInterrupt(_irq), port_dwic_isr, RISING);
 }
 
 void reselect(uint8_t ss) {
@@ -544,8 +536,8 @@ void port_EnableEXT_IRQ(void) {
 
 }
 
-/* DW IC IRQ handler definition. */
-static port_dwic_isr_t port_dwic_isr = NULL;
+// /* DW IC IRQ handler definition. */
+// static port_dwic_isr_t port_dwic_isr = NULL;
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn port_set_dwic_isr()
