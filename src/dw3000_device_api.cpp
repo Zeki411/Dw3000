@@ -3971,7 +3971,7 @@ void dwt_setinterrupt(uint32_t bitmask_lo, uint32_t bitmask_hi, dwt_INT_options_
     decaIrqStatus_t stat ;
 
     // Need to beware of interrupts occurring in the middle of following read modify write cycle
-    stat = decamutexon();
+    // stat = decamutexon(); // BUG: causes crash
 
     if(INT_options == DWT_ENABLE_INT_ONLY)
     {
@@ -3992,7 +3992,7 @@ void dwt_setinterrupt(uint32_t bitmask_lo, uint32_t bitmask_hi, dwt_INT_options_
         }
     }
 
-    decamutexoff(stat);
+    // decamutexoff(stat); // BUG: causes crash
 }
 
 /*! ------------------------------------------------------------------------------------------------------------------
